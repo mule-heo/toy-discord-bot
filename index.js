@@ -1,11 +1,17 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { Client, Collection, GatewayIntentBits } = require("discord.js");
-const dotenv = require("dotenv");
-dotenv.config();
+require("dotenv").config();
 
 // Client 인스턴스를 생성합니다.
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+});
 
 client.cooldowns = new Collection();
 client.commands = new Collection();
