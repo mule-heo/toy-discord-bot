@@ -26,19 +26,16 @@ module.exports = {
     if (timestamps.has(interaction.user.id)) {
       const expirationTime = timestamps.get(interaction.user.id) + cooldownTime;
 
+      // <t:${expiredTimestamp}:R>
+      // const expiredTimestamp = Math.round(expirationTime / 1000);
       if (now < expirationTime) {
-        const expiredTimestamp = Math.round(expirationTime / 1000);
+        const timeDelta = Math.ceil((expirationTime - now) / 1000);
         await interaction.reply({
-          content: `기다려주세요. \`${command.data.name}\` 요청은 <t:${expiredTimestamp}:R>에 다시 보낼 수 있습니다.`,
+          content: `기다려주세요. \`${command.data.name}\` 요청은 ${timeDelta}초 후에 다시 보낼 수 있습니다.`,
           ephemeral: true,
         });
-        setTimeout(async () => {
-          await interaction.deleteReply();
-          await interaction.followUp({
-            content: "이제 다시 요청을 보낼 수 있습니다.",
-            ephemeral: true,
-          });
-        }, cooldownTime);
+        await wait(timeDelta * 1000);
+        await interaction.deleteReply();
         return;
       }
     }
@@ -57,19 +54,17 @@ module.exports = {
       await command.execute(interaction);
     } catch (error) {
       console.error(error);
-      /*
       if (interaction.replied || interaction.deferred) {
         await interaction.followUp({
-          content: "명령어 실행중 일시적인 오류가 발생하였습니다.",
+          content: "명령어 실행중 오류가 발생하였습니다.",
           ephemeral: true,
         });
       } else {
         await interaction.reply({
-          content: "명령어 실행중 일시적인 오류가 발생하였습니다.",
+          content: "명령어 실행중 오류가 발생하였습니다.",
           ephemeral: true,
         });
       }
-      */
     }
   },
 };
